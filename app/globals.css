@@ -24,8 +24,12 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+
 }
 
+.parallax-scroll {
+
+}
 @layer components {
 
   .bg-overlay {
@@ -41,11 +45,11 @@ body {
   }
 
   .page-title {
-    @apply flex items-center drop-shadow-[0_3px_3px_rgba(0,0,0,0.2)] w-full p-6 m-4 md:m-2 md:p-6 mx-auto md:mx-0 md:w-11/12 text-5xl font-black text-left text-red-500 uppercase;
+    @apply flex items-center drop-shadow-[0_3px_3px_rgba(0,0,0,0.2)] w-full md:m-2 md:p-6 mx-auto md:mx-0 md:w-11/12 text-5xl font-black text-left text-red-500 uppercase;
   }
 
   .section-title {
-    @apply font-bold m-0 p-6 text-2xl text-right text-zinc-900;
+    @apply font-bold pt-6 text-2xl text-right text-zinc-900;
   }
 
   .body-text {
