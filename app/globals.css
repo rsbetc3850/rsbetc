@@ -29,11 +29,11 @@ body {
 @layer components {
 
   .bg-overlay {
-    @apply w-full h-full bg-zinc-100 bg-opacity-80 flex flex-col;
+    @apply w-full h-full bg-white bg-opacity-90 flex flex-col;
   }
 
   .page-title-container {
-    @apply w-full md:w-2/5 flex justify-end;
+    @apply w-full md:w-3/5 flex justify-end;
   }
 
   .section-title-container {
@@ -41,19 +41,19 @@ body {
   }
 
   .page-title {
-    @apply flex items-center drop-shadow-[0_3px_3px_rgba(0,0,0,0.2)] w-full p-6 m-4 md:m-2 md:p-6 mx-auto md:mx-0 md:w-10/12 text-5xl font-black text-left text-red-500 uppercase;
+    @apply flex items-center drop-shadow-[0_3px_3px_rgba(0,0,0,0.2)] w-full p-6 m-4 md:m-2 md:p-6 mx-auto md:mx-0 md:w-11/12 text-5xl font-black text-left text-red-500 uppercase;
   }
 
   .section-title {
-    @apply italic font-bold m-6 p-6 text-2xl text-right text-zinc-900;
+    @apply font-bold m-0 p-6 text-2xl text-right text-zinc-900;
   }
 
   .body-text {
-    @apply leading-loose md:m-6 md:p-6 md:my-4 md:py-2 m-2 p-2 text-xl text-zinc-900;
+    @apply leading-loose md:m-6 md:p-6 md:my-4 md:py-2 m-2 p-2 text-xl text-zinc-900 font-semibold;
   }
 
   .highlight-text {
-    @apply text-red-600 ;
+    @apply text-red-500 ;
   }
 
   .list-container {
@@ -81,11 +81,11 @@ body {
   }
 
     .nav-link {
-      @apply text-zinc-50 hover:bg-opacity-25 hover:bg-zinc-700 rounded m-1 hover:text-yellow-200 font-semibold p-1 text-xl;
+      @apply text-zinc-200 hover:bg-opacity-100 hover:bg-zinc-950 rounded m-1 hover:text-white font-semibold p-1 text-xl;
     }
   
     .mobile-nav-link {
-      @apply text-white rounded hover:bg-zinc-900 hover:text-white block p-1 font-semibold text-lg;
+      @apply text-white rounded hover:bg-zinc-950 hover:text-red-500 block p-1 font-semibold text-lg;
     }
 
     .flag-dropdown {

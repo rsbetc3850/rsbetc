@@ -1,27 +1,42 @@
+import Image from 'next/image';
+
 export default function Home() {
   return (
     <div className="page-container">
+      <div className="hero-image-container">
+        <Image
+          src="/overload.jpg" // replace with your image path
+          alt="tech overload"
+          layout="responsive"
+          width={100}
+          height={30}
+        />
+      </div>
       <div className="flex-container">
         <div className="page-title-container">
-          <h2 className="page-title"><span className=" hover:backdrop-blur-xl hover:shadow-lg hover:rounded-lg">Batteries And More</span></h2>
+          <h2 className="page-title">Serving The Nature Coast</h2>
         </div>
         <div className="section-title-container">
-          <p className="section-title"><span className=" hover:backdrop-blur-xl hover:shadow-lg hover:rounded-lg">Find It At The Shack</span></p>
+          <p className="section-title">You Can Find It Here!</p>
         </div>
       </div>
-<div className=" hover:backdrop-blur-xl hover:shadow-lg hover:rounded-lg">
-      <p className="body-text">
-        <span className="highlight-text">Liminality</span> refers to the quality of being in a transitional or transformative state, between what was and what will be. At <span className="highlight-text">LMYNL</span>, we believe that this concept has a powerful resonance with the world of software development and technology solutions. Just as <span className="highlight-text">liminal</span> spaces can be places of creativity, experimentation, and growth, so too can the process of building new software or implementing new technologies be a transformative experience for businesses and individuals alike.
-      </p>
-
-      <p className="body-text">
-        In the world of technology, change is constant and rapid. Companies that are able to adapt and evolve quickly are better positioned to succeed in this dynamic landscape. At <span className="highlight-text">LMYNL</span>, we embrace the <span className="highlight-text">liminality</span> of technology, helping our clients navigate the ever-shifting landscape of software development and digital transformation. We specialize in building custom solutions that are tailored to each client&apos;s unique needs, leveraging the latest tools and techniques to create innovative and effective solutions.
-      </p>
-
-      <p className="body-text">
-        But <span className="highlight-text">liminality</span> is not just about change for its own sake. It is also about the potential for growth and transformation that arises in times of transition. At <span className="highlight-text">LMYNL</span>, we believe that technology has the power to unlock new possibilities and create new opportunities for our clients. Whether it&apos;s streamlining operations, improving customer experiences, or opening up new markets, we work closely with our clients to identify areas where technology can drive meaningful change and growth. By embracing the liminality of technology, we help our clients achieve their full potential and thrive in an ever-changing world.
-      </p>
-</div>
+      <div className="">
+        <p className="body-text">
+          Located at 3850 E Gulf to Lake Highway, Suite 11 in Inverness, FL, we're open Monday through Saturday from 10am to 5pm. Give us a call at <span className="highlight-text">352-344-1962</span> to reach our friendly team.
+        </p>
+        <p className="body-text">
+          At Batteries Etc., we're more than just a battery store. We're your source for a wide range of high-tech gadgets that you won't find anywhere else. From batteries for devices, cordless phones, wheelchairs, scooters, tools, golf carts, home and garden, to a variety of cables and connectors for audio, video, and data, we've got you covered.
+        </p>
+        <p className="body-text">
+          We're also an H2O Wireless dealer, offering great affordable monthly, multiline, multimonth, and yearly plans for smartphones and flip phones. Plus, we offer Xfinity prepaid wireless with a low monthly price of $45, with no hidden fees or contracts.
+        </p>
+        <p className="body-text">
+          In addition to our product offerings, we also provide repair services for iPhones, iPads, and select Android devices. Our computer services include a full range of hardware and software solutions, and we also perform small electronics repairs.
+        </p>
+        <p className="body-text">
+          For the DIYer or hobbyist, we stock a variety of electronics components and tools to help you get the job done right. So whether you're looking for batteries, cables, connectors, wireless plans, repairs, or components, Batteries Etc. is your go-to destination. Come visit us today and see what we have to offer!
+        </p>
+      </div>
     </div>
   );
 }

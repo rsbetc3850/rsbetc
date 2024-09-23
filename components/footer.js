@@ -8,7 +8,7 @@ export default function Footer() {
             <div className="px-6 mx-6 flex flex-col items-center w-full md:flex-row md:justify-center md:items-start w-full">
                 <div className="text-lg w-full text-center text-zinc-200 mb-4 md:w-3/12 text-center md:text-left">
                     <p className="italic pb-2 mb-2 font-bold">You Can Find It Here!</p>
-                    <p>Radioshack Batteries Etc</p>
+                    <p>Batteries Etc</p>
                 </div>
                 
                 <div className="w-full flex flex-row justify-center text-zinc-400 mb-4 md:w-6/12 flex-row justify-center md:justify-between  md:pt-1">

@@ -11,7 +11,7 @@ const myfont = Montserrat({ subsets: ["latin"] });
 const monoFur = localFont({ src: "../public/MonofurNerdFont-Regular.ttf", display: "swap" });
 
 export const metadata = {
-    title: "Radioshack Batteries Etc",
+    title: "Batteries Etc",
     description: "Proudly Serving Inverness, FL and Surrounding Areas 352-344-1962",
 };
 
@@ -19,9 +19,9 @@ export default function RootLayout({ children }) {
     return (
         <html lang="en">
             <body className={`w-full h-full ${myfont.className} overflow-y-auto`}>
-                <BackgroundImage src="" />
+                <BackgroundImage src="pcb.jpg" />
                 <div className="bg-overlay">
-                    <Header font={myfont.className} slug="Radioshack Batteries Etc" />
+                    <Header font={myfont.className} slug="Batteries Etc" />
                     <main className="w-full relative z-10 flex-grow">{children}</main>
                     <Footer />
                 </div>
