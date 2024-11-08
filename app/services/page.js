@@ -1,9 +1,34 @@
 import React from 'react';
-import { services } from '@/data/config';
 import ServiceCard from '@/components/ServiceCard';
-import Carousel from '@/components/Carousel';
 
 export default function Services() {
+    const services = [
+        {
+            title: 'Batteries and Chargers',
+            items: ['Devices', 'Cordless Phones', 'Wheelchairs', 'Scooters', 'Tools', 'Golf Carts', 'Home and Garden'],
+        },
+        {
+            title: 'Cables and Connectors',
+            items: ['Audio', 'Video', 'Data'],
+        },
+        {
+            title: 'Wireless Plans',
+            items: ['H2O Wireless', 'Xfinity Prepaid Wireless'],
+        },
+        {
+            title: 'Repair Services',
+            items: ['iPhones', 'iPads', 'Select Android Devices'],
+        },
+        {
+            title: 'Computer Services',
+            items: ['Hardware and Software Solutions', 'Small Electronics Repairs'],
+        },
+        {
+            title: 'Electronics Components and Tools',
+            items: ['For DIYers and Hobbyists'],
+        },
+    ];
+
     return (
         <div className="page-container">
             <div className="flex-container">
@@ -11,23 +36,26 @@ export default function Services() {
                     <h2 className="page-title">Services</h2>
                 </div>
                 <div className="section-title-container">
-                    <p className="section-title">LMYNL provides a wide range of cost-effective and innovative technology solutions.</p>
+                    <p className="section-title">We Solve Problems!</p>
                 </div>
             </div>
             <p className="body-text">
-                At our company, we specialize in designing and building a wide range of digital projects that help businesses thrive in today&apos;s online world. From brand websites to e-commerce platforms, we have the expertise to bring your vision to life.
+                At Batteries Etc., we offer a comprehensive range of services to meet all your tech needs. From batteries and chargers to cables and connectors, wireless plans, repair services, computer solutions, and electronics components, we&apos;ve got you covered.
             </p>
             <p className="body-text">
-                Our team excels in building operations infrastructure, automating processes, and integrating systems to streamline your business operations. We also specialize in creating data APIs that enable seamless data exchange between different applications.
+                Our battery and charger services cater to a variety of devices, including cordless phones, wheelchairs, scooters, tools, golf carts, and home and garden equipment. We also stock a wide range of cables and connectors for audio, video, and data applications.
             </p>
             <p className="body-text">
-                Looking to drive more traffic and conversions? Our digital advertising landing pages are optimized for maximum impact and results. Plus, our KPI dashboards help you track your business performance in real-time, giving you valuable insights to make informed decisions.
+                For wireless connectivity, we&apos;re an H2O Wireless dealer, offering affordable monthly, multiline, multimonth, and yearly plans for smartphones and flip phones. Additionally, we offer Xfinity prepaid wireless plans with a low monthly price of $45, with no hidden fees or contracts.
             </p>
             <p className="body-text">
-                No matter what type of project you have in mind, we have the skills and experience to deliver exceptional results. Contact us today to learn more about how we can help your business succeed online.
+                Our repair services include iPhone and iPad repairs, as well as select Android device repairs. Our computer services encompass a full range of hardware and software solutions, and we also perform small electronics repairs.
+            </p>
+            <p className="body-text">
+                For the DIYer or hobbyist, we stock a variety of electronics components and tools to help you get the job done right.
             </p>
             <p className="body-text text-center highlight-text">
-                This list is not an exhaustive list of supported platforms and services by LMYNL
+                This list is not an exhaustive list of supported platforms and services by Batteries Etc.
             </p>
             <div className="flex-container items-start w-full">
                 {/* Services list */}
@@ -35,12 +63,6 @@ export default function Services() {
                     {services.map((service, index) => (
                         <ServiceCard key={index} title={service.title} items={service.items} />
                     ))}
-                <div className=" rounded-lg shadow-lg border border-gray-200 p-6 m-4 bg-zinc-900 bg-opacity-50 border-2 border-zinc-300 shadow-2xl flex items-center">
-                <p className="text-xl p-0 m-0 text-justify">
-                    This list is not representative of the totality of skills and experience <span className="text-amber-300">LMYNL</span> offers. Instead, it merely provides a sense of the wide solutions coverage available. Many of these services are value-added bonuses as a consequence of working towards your vision.
-                </p>
-                </div>
-
                 </div>
             </div>
         </div>
