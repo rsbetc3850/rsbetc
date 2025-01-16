@@ -1,8 +1,8 @@
-import Image from "next/legacy/image";
+import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="page-container">
+    (<div className="page-container">
       <div className="flex-container">
         <div className="page-title-container">
           <h2 className="page-title">Serving The Nature Coast</h2>
@@ -13,12 +13,16 @@ export default function Home() {
       </div>
       <div className="w-100 md:w-1/3  float-right p-6 m-0">
           <Image
-            src="/overload.jpg" // replace with your image path
+            // replace with your image path
+            src="/overload.jpg"
             alt="tech overload"
-            layout="responsive"
             width={100}
             height={100}
-          />
+            sizes="100vw"
+            style={{
+              width: "100%",
+              height: "auto"
+            }} />
         </div>
       <div className="">
         <p className="body-text">
@@ -29,41 +33,53 @@ export default function Home() {
         </p>
         <div className="w-100 md:w-1/3   float-left p-6 m-0">
           <Image
-            src="/h2o.png" // replace with your image path
+            // replace with your image path
+            src="/h2o.png"
             alt="H2O Wireless"
-            layout="responsive"
             width={100}
             height={100}
-          />
+            sizes="100vw"
+            style={{
+              width: "100%",
+              height: "auto"
+            }} />
         </div>
         <p className="body-text">
           We&apos;re also an H2O Wireless dealer, offering great affordable monthly, multiline, multimonth, and yearly plans for smartphones and flip phones. Plus, we offer Xfinity prepaid wireless with a low monthly price of $45, with no hidden fees or contracts.
         </p>
         <div className="w-100 md:w-1/3   float-right p-6 m-0">
           <Image
-            src="/cracked.jpg" // replace with your image path
+            // replace with your image path
+            src="/cracked.jpg"
             alt="Phone Repairs"
-            layout="responsive"
             width={100}
             height={100}
-          />
+            sizes="100vw"
+            style={{
+              width: "100%",
+              height: "auto"
+            }} />
         </div>
         <p className="body-text">
           In addition, we also provide repair services for iPhones, iPads, and select Android devices. Our computer services include a full range of hardware and software solutions, and we also perform small electronics repairs.
         </p>
         <div className="w-100 md:w-1/3   float-left p-6 m-0">
           <Image
-            src="/techteen.jpg" // replace with your image path
+            // replace with your image path
+            src="/techteen.jpg"
             alt="Phone Repairs"
-            layout="responsive"
             width={100}
             height={100}
-          />
+            sizes="100vw"
+            style={{
+              width: "100%",
+              height: "auto"
+            }} />
         </div>
         <p className="body-text">
           For the DIYer or hobbyist, we stock a variety of electronics components and tools to help you get the job done right. So whether you&apos;re looking for batteries, cables, connectors, wireless plans, repairs, or components, Batteries Etc. is your go-to destination. Come visit us today and see what we have to offer!
         </p>
       </div>
-    </div>
+    </div>)
   );
 }

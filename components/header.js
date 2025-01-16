@@ -1,4 +1,4 @@
-import Image from "next/legacy/image";
+import Image from "next/image";
 import Link from 'next/link';
 import Navbar from './navbar';
 import Navmenu from './navmenu';
@@ -6,12 +6,18 @@ import Navmenu from './navmenu';
 const Logo = () => {
     return (
         <Image
-            src="/betc-logo.svg" // replace with your logo path
+            // replace with your logo path
+            src="/betc-logo.svg"
             alt="Batteries Etc. Logo"
-            width={180} // set your desired width
-            height={70} // set your desired height
+            // set your desired width
+            width={180}
+            // set your desired height
+            height={70}
             className=""
-        />
+            style={{
+                maxWidth: "100%",
+                height: "auto"
+            }} />
     );
 };
 
