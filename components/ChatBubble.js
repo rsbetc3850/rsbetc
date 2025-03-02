@@ -135,8 +135,8 @@ export default function ChatBubble() {
       
 Be friendly, professional, and concise in your responses. Focus on helping the customer with their battery needs. If they ask questions you can't answer, offer to take their contact information and have a human representative get back to them.`;
 
-      // Send to Cloudflare worker
-      const response = await fetch(`https://orange-shape-c74e.travis-522.workers.dev/?system=${encodeURIComponent(systemPrompt)}&user=${encodeURIComponent(message)}`);
+      // Use our own API endpoint as a proxy to avoid CORS issues
+      const response = await fetch(`/api/chat/ai?system=${encodeURIComponent(systemPrompt)}&user=${encodeURIComponent(message)}`);
       
       if (!response.ok) throw new Error('Failed to get AI response');
       
