@@ -1,19 +1,25 @@
 import Link from 'next/link';
 import { siteLinks } from '../data/config';
-//import './globals.css';
 
 const Navbar = () => {
-    return (
-        <div className="hidden lg:block border-zinc-700">
-            <ul className="flex space-x-4 justify-end mr-4">
-                {siteLinks.map((link, index) => (
-                    <li key={index} className="nav-link">
-                        <Link href={link.href}>{link.label}</Link>
-                    </li>
-                ))}
-            </ul>
-        </div>
-    );
+  return (
+    <div className="hidden lg:block">
+      <nav className="flex">
+        <ul className="flex space-x-1 items-center justify-end">
+          {siteLinks.map((link, index) => (
+            <li key={index}>
+              <Link 
+                href={link.href}
+                className="text-zinc-200 bg-red-700 hover:bg-red-800 px-4 py-2 rounded font-semibold block transition-colors text-sm"
+              >
+                {link.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </div>
+  );
 };
 
 export default Navbar;

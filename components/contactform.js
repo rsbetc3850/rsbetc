@@ -1,12 +1,26 @@
+'use client';
 import React, { useState } from 'react';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue 
+} from '@/components/ui/select';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
 
-const roles = ['CEO', 'CTO', 'Manager', 'Developer', 'Designer', 'Marketing', 'Sales', 'Other'];
 const sources = ['Search Engine', 'Social Media', 'Referral', 'Advertisement', 'Conference', 'Other'];
+const timeOptions = ['Morning', 'Afternoon', 'Evening', 'Any'];
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({
@@ -14,8 +28,6 @@ export default function ContactForm() {
     email: '',
     phone: '',
     company: '',
-    role: '',
-    otherRole: '',
     bestTimeToContact: '',
     howDidYouHearAboutUs: '',
     otherSource: '',
@@ -25,14 +37,19 @@ export default function ContactForm() {
 
   const [errors, setErrors] = useState({});
   const router = useRouter();
-  const pathname = usePathname();
-
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData(prevState => ({
       ...prevState,
       [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const handleSelectChange = (name, value) => {
+    setFormData(prevState => ({
+      ...prevState,
+      [name]: value
     }));
   };
 
@@ -43,13 +60,19 @@ export default function ContactForm() {
     }));
   };
 
+  const handleCheckboxChange = (checked) => {
+    setFormData(prevState => ({
+      ...prevState,
+      optIn: checked
+    }));
+  };
+
   const validateForm = () => {
     let errors = {};
     if (!formData.name) errors.name = 'Name is required';
     if (!formData.email && !formData.phone) errors.contact = 'Either email or phone is required';
     if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) errors.email = 'Email is invalid';
     if (formData.phone && !/^\+?[1-9]\d{1,14}$/.test(formData.phone)) errors.phone = 'Phone number is invalid';
-    if (formData.role === 'Other' && !formData.otherRole) errors.otherRole = 'Please specify your role';
     if (formData.howDidYouHearAboutUs === 'Other' && !formData.otherSource) errors.otherSource = 'Please specify how you heard about us';
     return errors;
   };
@@ -72,15 +95,13 @@ export default function ContactForm() {
       if (response.ok) {
         toast.success('Form submitted successfully!', {
           autoClose: 2000,
-          onClose: () => router.push('/'), // Redirect to home page when toast is closed
+          onClose: () => router.push('/'),
         });
         setFormData({
           name: '',
           email: '',
           phone: '',
           company: '',
-          role: '',
-          otherRole: '',
           bestTimeToContact: '',
           howDidYouHearAboutUs: '',
           otherSource: '',
@@ -97,82 +118,61 @@ export default function ContactForm() {
   };
 
   const customDropdownStyle = {
-    backgroundColor: '#18181b', // bg-zinc-900
-    color: '#e4e4e7', // text-zinc-200
-    border: '1px solid #3f3f46', // border-zinc-700
+    backgroundColor: '#27272a',
+    color: '#ffffff',
+    border: '1px solid #52525b',
   };
 
   const customFlagStyle = {
-    backgroundColor: '#18181b40', // bg-zinc-900
+    backgroundColor: '#27272a',
   };
+  
   return (
-    <div className="flex flex-col items-center ">
-      <h2 className="text-lg font-semibold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] text-zinc-100 mb-4 capitalize">Please use the following form to contact us</h2>
-      <form onSubmit={handleSubmit} className="backdrop-blur-md space-y-4 border-2 border-zinc-200 mb-8 p-4 shadow-lg rounded-lg bg-zinc-900 bg-opacity-25">
-        <div className="mt-2">
-          <label htmlFor="name" className="block text-sm font-medium text-zinc-100">Name *</label>
-          <input
-            type="text"
+    <div className="flex flex-col items-center">
+      <h2 className="text-xl font-semibold text-zinc-100 mb-4 capitalize">
+        Please use the following form to contact us
+      </h2>
+      
+      <form onSubmit={handleSubmit} className="backdrop-blur-md space-y-5 border-2 border-zinc-600 mb-8 p-6 shadow-lg rounded-lg bg-zinc-900 w-full max-w-lg">
+        <div className="space-y-2">
+          <Label htmlFor="name" className="text-white font-medium">Name *</Label>
+          <Input
             id="name"
             name="name"
             value={formData.name}
             onChange={handleChange}
             required
-            className="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-300 focus:ring focus:ring-yellow-200 focus:ring-opacity-50 bg-zinc-700 text-zinc-100 bg-opacity-25"
+            className="bg-zinc-800 text-white border-zinc-600 focus:border-red-400"
           />
-          {errors.name && <p className="text-red-500 text-xs italic">{errors.name}</p>}
+          {errors.name && <p className="text-red-500 text-xs">{errors.name}</p>}
         </div>
-        <div className="mt-2">
-          <label htmlFor="company" className="block text-sm font-medium text-zinc-100">Company</label>
-          <input
-            type="text"
+
+        <div className="space-y-2">
+          <Label htmlFor="company" className="text-white font-medium">Company</Label>
+          <Input
             id="company"
             name="company"
             value={formData.company}
             onChange={handleChange}
-            className="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-300 focus:ring focus:ring-yellow-200 focus:ring-opacity-50 bg-zinc-700 text-zinc-100 bg-opacity-25"
+            className="bg-zinc-800 text-white border-zinc-600 focus:border-red-400"
           />
         </div>
-        <div className="mt-2">
-          <label htmlFor="role" className="block text-sm font-medium text-zinc-100">Role</label>
-          <select
-            id="role"
-            name="role"
-            value={formData.role}
-            onChange={handleChange}
-            className="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-300 focus:ring focus:ring-yellow-200 focus:ring-opacity-50 bg-zinc-700 text-zinc-100 bg-opacity-25"
-          >
-            <option value="">Select a role</option>
-            {roles.map(role => (
-              <option key={role} value={role}>{role}</option>
-            ))}
-          </select>
-          {formData.role === 'Other' && (
-            <input
-              type="text"
-              name="otherRole"
-              value={formData.otherRole}
-              onChange={handleChange}
-              placeholder="Please specify your role"
-              className="mt-2 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-300 focus:ring focus:ring-yellow-200 focus:ring-opacity-50 bg-zinc-700 text-zinc-100 bg-opacity-25"
-            />
-          )}
-          {errors.otherRole && <p className="text-red-500 text-xs italic">{errors.otherRole}</p>}
-        </div>
-        <div className="mt-2">
-          <label htmlFor="email" className="block text-sm font-medium text-zinc-100">Email</label>
-          <input
+
+        <div className="space-y-2">
+          <Label htmlFor="email" className="text-white font-medium">Email</Label>
+          <Input
             type="email"
             id="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-300 focus:ring focus:ring-yellow-200 focus:ring-opacity-50 bg-zinc-700 text-zinc-100 bg-opacity-25"
+            className="bg-zinc-800 text-white border-zinc-600 focus:border-red-400"
           />
-          {errors.email && <p className="text-red-500 text-xs italic">{errors.email}</p>}
+          {errors.email && <p className="text-red-500 text-xs">{errors.email}</p>}
         </div>
-        <div className="mt-2">
-          <label htmlFor="phone" className="mt-4 block text-sm font-medium text-zinc-100">Phone</label>
+
+        <div className="space-y-2">
+          <Label htmlFor="phone" className="text-white font-medium">Phone</Label>
           <PhoneInput
             country={'us'}
             value={formData.phone}
@@ -181,9 +181,9 @@ export default function ContactForm() {
             buttonStyle={customFlagStyle}
             inputStyle={{
               width: '100%',
-              backgroundColor: '#18181b40',
-              color: '#e4e4e7',
-              border: '1px solid #3f3f46',
+              backgroundColor: '#27272a',
+              color: '#ffffff',
+              border: '1px solid #52525b',
               borderRadius: '0.375rem',
               padding: '0.5rem 1rem',
               paddingLeft: '3rem',
@@ -192,106 +192,108 @@ export default function ContactForm() {
             dropdownClass="custom-phone-dropdown"
             inputProps={{
               name: 'phone',
-              required: true,
-              className: 'focus:border-yellow-300 focus:ring focus:ring-yellow-200 focus:ring-opacity-50'
+              className: 'focus:border-red-400 focus:ring focus:ring-red-300 focus:ring-opacity-50'
             }}
           />
-          {errors.phone && <p className="text-red-500 text-xs italic">{errors.phone}</p>}
+          {errors.phone && <p className="text-red-500 text-xs">{errors.phone}</p>}
         </div>
-        <div className="mt-2">
-          <label className="block text-sm font-medium text-zinc-100">Best Time to Contact</label>
-          <div className="mt-2 space-x-4">
-            {['Morning', 'Afternoon', 'Evening', 'Any'].map(time => (
-              <label key={time} className="inline-flex items-center">
-                <input
-                  type="radio"
-                  name="bestTimeToContact"
-                  value={time}
-                  checked={formData.bestTimeToContact === time}
-                  onChange={handleChange}
-                  className="form-radio text-yellow-600"
-                />
-                <span className="ml-2 text-zinc-100">{time}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-        <div className="mt-2">
-          <label htmlFor="howDidYouHearAboutUs" className="block text-sm font-medium text-zinc-100">How Did You Hear About Us?</label>
-          <select
-            id="howDidYouHearAboutUs"
-            name="howDidYouHearAboutUs"
-            value={formData.howDidYouHearAboutUs}
-            onChange={handleChange}
-            className="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-300 focus:ring focus:ring-yellow-200 focus:ring-opacity-50 bg-zinc-700 text-zinc-100 bg-opacity-25"
+
+        <div className="space-y-2">
+          <Label className="text-white font-medium">Best Time to Contact</Label>
+          <RadioGroup 
+            value={formData.bestTimeToContact}
+            onValueChange={(value) => handleSelectChange('bestTimeToContact', value)}
+            className="flex space-x-4"
           >
-            <option value="">Select an option</option>
-            {sources.map(source => (
-              <option key={source} value={source}>{source}</option>
+            {timeOptions.map((time) => (
+              <div key={time} className="flex items-center space-x-2">
+                <RadioGroupItem value={time} id={`time-${time}`} className="text-red-500" />
+                <Label htmlFor={`time-${time}`} className="text-white">{time}</Label>
+              </div>
             ))}
-          </select>
+          </RadioGroup>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="howDidYouHearAboutUs" className="text-white font-medium">How Did You Hear About Us?</Label>
+          <Select
+            value={formData.howDidYouHearAboutUs}
+            onValueChange={(value) => handleSelectChange('howDidYouHearAboutUs', value)}
+          >
+            <SelectTrigger className="bg-zinc-800 text-white border-zinc-600">
+              <SelectValue placeholder="Select an option" />
+            </SelectTrigger>
+            <SelectContent className="bg-zinc-800 text-white border-zinc-600">
+              {sources.map(source => (
+                <SelectItem key={source} value={source}>{source}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           {formData.howDidYouHearAboutUs === 'Other' && (
-            <input
-              type="text"
+            <Input
               name="otherSource"
               value={formData.otherSource}
               onChange={handleChange}
               placeholder="Please specify how you heard about us"
-              className="mt-2 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-300 focus:ring focus:ring-yellow-200 focus:ring-opacity-50 bg-zinc-700 text-zinc-100 bg-opacity-25"
+              className="mt-2 bg-zinc-800 text-white border-zinc-600 focus:border-red-400"
             />
           )}
-          {errors.otherSource && <p className="text-red-500 text-xs italic">{errors.otherSource}</p>}
+          {errors.otherSource && <p className="text-red-500 text-xs">{errors.otherSource}</p>}
         </div>
-        <div className="mt-2">
-          <label htmlFor="subject" className="block text-sm font-medium text-zinc-100">Subject</label>
-            <textarea
-              id="subject"
-              name="subject"
-              value={formData.subject}
-              onChange={handleChange}
-              className="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-300 focus:ring focus:ring-yellow-200 focus:ring-opacity-50 bg-zinc-700 text-zinc-100 bg-opacity-25"
-              rows="4" // Add this line to set the number of rows for the textarea
-            />
-        </div>
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="optIn"
-            name="optIn"
-            checked={formData.optIn}
+
+        <div className="space-y-2">
+          <Label htmlFor="subject" className="text-white font-medium">Subject</Label>
+          <Textarea
+            id="subject"
+            name="subject"
+            value={formData.subject}
             onChange={handleChange}
-            className="h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded"
+            className="bg-zinc-800 text-white border-zinc-600 focus:border-red-400"
+            rows={4}
           />
-          <label htmlFor="optIn" className="ml-2 block text-sm text-zinc-100">
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <Checkbox 
+            id="optIn" 
+            checked={formData.optIn}
+            onCheckedChange={handleCheckboxChange}
+            className="border-zinc-500 data-[state=checked]:bg-red-600 data-[state=checked]:border-red-600"
+          />
+          <Label htmlFor="optIn" className="text-white text-sm font-medium">
             Opt-in to receive news and alerts
-          </label>
+          </Label>
         </div>
-        <div className="mt-2">
-          <button type="submit" className="w-full flex justify-center py-2 px-4 border-2 border-yellow-300 rounded-md shadow-sm text-sm font-medium text-white bg-yellow-600 bg-opacity-50 hover:bg-opacity-75 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
-            Submit
-          </button>
-        </div>
+
+        <Button 
+          type="submit" 
+          className="w-full bg-red-700 hover:bg-red-800 text-white border-0 font-semibold py-3"
+        >
+          Submit
+        </Button>
       </form>
+      
       <ToastContainer />
+      
       <style jsx global>{`
         .react-tel-input .country-list {
-          background-color: #18181b !important;
-          color: #e4e4e7 !important;
-        }
-        .react-tel-input .country-list .country:hover,
-        .react-tel-input .country-list .country.highlight {
           background-color: #27272a !important;
           color: #ffffff !important;
         }
+        .react-tel-input .country-list .country:hover,
+        .react-tel-input .country-list .country.highlight {
+          background-color: #3f3f46 !important;
+          color: #ffffff !important;
+        }
         .react-tel-input .selected-flag {
-          background-color: #18181b !important;
+          background-color: #27272a !important;
         }
         .react-tel-input .selected-flag:hover,
         .react-tel-input .selected-flag:focus {
-          background-color: #27272a !important;
+          background-color: #3f3f46 !important;
         }
         .react-tel-input .flag-dropdown.open {
-          background-color: #18181b !important;
+          background-color: #27272a !important;
         }
       `}</style>
     </div>

@@ -1,63 +1,58 @@
 'use client';
-import { useState } from 'react';
 import Link from 'next/link';
-import { FaBars, FaTimes } from 'react-icons/fa';
+import { Menu } from 'lucide-react';
 import { siteLinks } from '../data/config';
-//import './globals.css';
+import { 
+  Sheet,
+  SheetTrigger,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetClose
+} from '@/components/ui/sheet';
+import { Button } from '@/components/ui/button';
 
 const Navmenu = () => {
-    const [isOpen, setIsOpen] = useState(false);
-
-    const toggleMenu = () => {
-        setIsOpen(!isOpen);
-    };
-
-    const closeMenu = () => {
-        setIsOpen(false);
-    };
-
-    return (
-        <div className="lg:hidden z-50">
-            <button
-                onClick={toggleMenu}
-                type="button"
-                className="inline-flex items-center justify-center p-2 text-white hover:text-white hover:bg-rose-900"
-                aria-controls="mobile-menu"
-                aria-expanded="false"
-            >
-                <span className="sr-only">Open main menu</span>
-                {!isOpen ? (
-                    <FaBars className="block h-6 w-6" aria-hidden="true" />
-                ) : (
-                    <FaBars className="block h-6 w-6" aria-hidden="true" />
-                )}
-            </button>
-
-            {isOpen && (
-                <div className="fixed inset-0 bg-zinc-200 bg-opacity-20 z-50 flex items-center justify-center ">
-                    <div className="bg-zinc-900 backdrop-blur-md bg-opacity-50 p-4 rounded-lg border-2 border-zinc-100 w-64 relative">
-                        <h2 className="text-white text-lg font-bold mb-4">Navigation</h2>
-                        <ul className="space-y-2">
-                            {siteLinks.map((link, index) => (
-                                <li key={index} className="mobile-nav-link" onClick={closeMenu}>
-                                    <Link className="text-yellow-200 hover:text-gray-300 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]" href={link.href}>
-                                        {link.label}
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                        <button
-                            onClick={closeMenu}
-                            type="button"
-                            className="absolute top-2 right-2 text-white hover:text-gray-300"
-                        >
-                            <FaTimes className="block h-6 w-6" aria-hidden="true" />
-                        </button>
-                    </div>
-                </div>
-            )}
-        </div>
-    );
+  return (
+    <div className="lg:hidden z-50">
+      <Sheet>
+        <SheetTrigger asChild>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="text-zinc-200 hover:text-white hover:bg-red-700"
+            aria-label="Open menu"
+          >
+            <Menu className="h-6 w-6" />
+          </Button>
+        </SheetTrigger>
+        <SheetContent 
+          side="bottom" 
+          className="bg-zinc-900 bg-opacity-95 backdrop-blur-md border-zinc-700 rounded-t-xl w-full max-w-md mx-auto inset-x-0"
+        >
+          <SheetHeader>
+            <SheetTitle className="text-zinc-100 text-center">Navigation</SheetTitle>
+          </SheetHeader>
+          <nav className="mt-6">
+            <ul className="grid grid-cols-2 gap-3 place-items-center">
+              {siteLinks.map((link, index) => (
+                <li key={index} className="w-full max-w-[150px]">
+                  <SheetClose asChild>
+                    <Link 
+                      href={link.href}
+                      className="text-lg font-semibold text-zinc-200 bg-red-700 hover:bg-red-800 rounded block p-3 text-center transition-colors"
+                    >
+                      {link.label}
+                    </Link>
+                  </SheetClose>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </SheetContent>
+      </Sheet>
+    </div>
+  );
 };
 
 export default Navmenu;
