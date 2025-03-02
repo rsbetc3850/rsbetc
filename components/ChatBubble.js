@@ -24,26 +24,34 @@ export default function ChatBubble() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
   
-  // Poll for new messages every 3 seconds when in chat mode
+  // Poll for new messages every 2 seconds when in chat mode and keep initial messages
   useEffect(() => {
     let interval = null;
     
     const fetchNewMessages = async () => {
       if (sessionId && chatStage === 'chat') {
         try {
-          const response = await fetch(`/api/chat/messages?sessionId=${sessionId}`);
+          const response = await fetch(`/api/chat/messages?sessionId=${sessionId}&t=${Date.now()}`, {
+            cache: 'no-store'
+          });
           if (response.ok) {
             const data = await response.json();
             
-            // Update messages if there are new ones
-            if (data.messages.length > messages.length) {
-              setMessages(data.messages.map(msg => ({
+            // Always update messages to ensure we get the latest
+            if (data.messages && data.messages.length > 0) {
+              // Convert server messages to our format
+              const formattedMessages = data.messages.map(msg => ({
                 id: msg.id,
                 content: msg.content,
                 isFromCustomer: msg.isFromCustomer,
                 aiGenerated: msg.aiGenerated || false,
                 createdAt: msg.createdAt
-              })));
+              }));
+              
+              // Save the messages if there are more than what we already have
+              if (formattedMessages.length >= messages.length) {
+                setMessages(formattedMessages);
+              }
             }
           }
         } catch (error) {
@@ -56,8 +64,8 @@ export default function ChatBubble() {
       // Initial fetch
       fetchNewMessages();
       
-      // Set up polling
-      interval = setInterval(fetchNewMessages, 3000);
+      // Set up polling with faster interval
+      interval = setInterval(fetchNewMessages, 2000);
     }
     
     return () => {
@@ -76,7 +84,19 @@ export default function ChatBubble() {
     setIsConnecting(true);
     
     try {
-      // First, try to connect to an available employee
+      // First create the initial messages array with the customer's query if provided
+      const initialMessages = [];
+      
+      // Add customer's query as their first message if provided
+      if (customerInfo.query) {
+        initialMessages.push({ 
+          id: Date.now() - 1000, // Ensure this comes before welcome message
+          content: customerInfo.query,
+          isFromCustomer: true 
+        });
+      }
+      
+      // Connect to an available employee
       const response = await fetch('/api/chat/start-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -90,23 +110,27 @@ export default function ChatBubble() {
       
       // If there's an employee available, add the welcome message
       if (data.employeeConnected) {
-        setMessages([{ 
+        initialMessages.push({ 
           id: Date.now(), 
           content: `Hello ${customerInfo.name}, you're connected with ${data.employeeName}. How can I help you today?`,
           isFromCustomer: false 
-        }]);
+        });
+        setMessages(initialMessages);
         setChatStage('chat');
       } else {
         // If no employee is available, we'll show AI-powered responses
-        setMessages([{ 
+        initialMessages.push({ 
           id: Date.now(), 
           content: `Hello ${customerInfo.name}, all our agents are currently busy. I'm an AI assistant and I'll do my best to help you.`,
           isFromCustomer: false,
           aiGenerated: true
-        }]);
+        });
+        
+        setMessages(initialMessages);
         
         // If query was provided, send it to AI
         if (customerInfo.query) {
+          // The message is already in the UI, so we just need to send it to AI
           sendMessageToAI(customerInfo.query);
         }
         
@@ -176,12 +200,15 @@ export default function ChatBubble() {
       
 Be friendly, professional, and concise in your responses. Focus on helping the customer with their battery needs. If they ask questions you can't answer, offer to take their contact information and have a human representative get back to them.`;
 
+      console.log("Sending message to AI:", message);
+      
       // Use our own API endpoint as a proxy to avoid CORS issues
       const response = await fetch(`/api/chat/ai?system=${encodeURIComponent(systemPrompt)}&user=${encodeURIComponent(message)}`);
       
       if (!response.ok) throw new Error('Failed to get AI response');
       
       const data = await response.json();
+      console.log("AI response:", data);
       
       // Remove typing indicator
       setMessages(prev => prev.filter(msg => msg.id !== 'typing'));
@@ -208,6 +235,28 @@ Be friendly, professional, and concise in your responses. Focus on helping the c
             aiGenerated: true
           })
         });
+      } else {
+        // Fallback response
+        const fallbackResponse = {
+          id: Date.now(),
+          content: "I understand your question. Let me help you with that. Could you provide more details about what specific battery products you're interested in?",
+          isFromCustomer: false,
+          aiGenerated: true
+        };
+        
+        setMessages(prev => [...prev, fallbackResponse]);
+        
+        // Store the fallback response
+        await fetch('/api/chat/send-message', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sessionId,
+            content: fallbackResponse.content,
+            isFromCustomer: false,
+            aiGenerated: true
+          })
+        });
       }
     } catch (error) {
       console.error('Error getting AI response:', error);
@@ -216,12 +265,26 @@ Be friendly, professional, and concise in your responses. Focus on helping the c
       setMessages(prev => prev.filter(msg => msg.id !== 'typing'));
       
       // Show error message
-      setMessages(prev => [...prev, { 
+      const errorMessage = {
         id: Date.now(), 
         content: "I'm sorry, I'm having trouble connecting. Please try again or leave your contact information for a human representative to reach out to you.",
         isFromCustomer: false,
         aiGenerated: true
-      }]);
+      };
+      
+      setMessages(prev => [...prev, errorMessage]);
+      
+      // Store the error message
+      await fetch('/api/chat/send-message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId,
+          content: errorMessage.content,
+          isFromCustomer: false,
+          aiGenerated: true
+        })
+      });
     }
   };
 
@@ -333,7 +396,7 @@ Be friendly, professional, and concise in your responses. Focus on helping the c
   };
 
   return (
-    <div className="fixed bottom-4 right-4 z-40">
+    <div className="fixed bottom-4 right-4 z-40 chat-bubble-container">
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>
           <Button 

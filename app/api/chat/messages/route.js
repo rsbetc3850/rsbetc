@@ -5,6 +5,7 @@ const prisma = new PrismaClient();
 
 // This ensures the route is handled dynamically
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function GET(req) {
   try {

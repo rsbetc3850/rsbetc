@@ -9,6 +9,14 @@ import { Switch } from '@/components/ui/switch';
 import { Send, LogOut, User, MessageSquare, Clock } from 'lucide-react';
 
 export default function ChatAdmin() {
+  // Skip rendering ChatBubble on admin page
+  if (typeof window !== 'undefined') {
+    // Client-side only code
+    const chatBubbleElement = document.querySelector('.chat-bubble-container');
+    if (chatBubbleElement) {
+      chatBubbleElement.style.display = 'none';
+    }
+  }
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -23,10 +31,7 @@ export default function ChatAdmin() {
   const router = useRouter();
   const refreshInterval = useRef(null);
 
-  // Scroll to bottom whenever messages change
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  // No auto-scrolling to avoid page jump
 
   // Poll for new sessions and messages
   useEffect(() => {
@@ -50,7 +55,24 @@ export default function ChatAdmin() {
         }
       };
     }
-  }, [isAuthenticated, selectedSession]);
+  }, [isAuthenticated]);
+  
+  // Load employee status when authenticated
+  useEffect(() => {
+    if (isAuthenticated && employeeName) {
+      const employeeId = localStorage.getItem('employeeId');
+      if (employeeId) {
+        fetch(`/api/chat/employee/${employeeId}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data && data.isAvailable !== undefined) {
+              setIsAvailable(data.isAvailable);
+            }
+          })
+          .catch(err => console.error('Error fetching employee status:', err));
+      }
+    }
+  }, [isAuthenticated, employeeName]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -106,22 +128,48 @@ export default function ChatAdmin() {
   };
 
   const handleAvailabilityChange = async (checked) => {
+    // Update the local state immediately for UI feedback
     setIsAvailable(checked);
     
-    if (!employeeName) return;
-    
     try {
-      await fetch('/api/chat/employee', {
+      if (!checked) {
+        // If we're setting to unavailable, clear the employee name too
+        setEmployeeName('');
+        localStorage.removeItem('employeeName');
+      }
+      
+      const employeeId = localStorage.getItem('employeeId');
+      
+      // DIRECT DATABASE UPDATE for guaranteed reliability
+      const response = await fetch(`/api/chat/employee/force-availability`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          name: employeeName, 
           isAvailable: checked,
-          id: localStorage.getItem('employeeId')
+          employeeId: employeeId
         })
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to update availability');
+      }
+      
+      const data = await response.json();
+      console.log("Employee update response:", data);
+      
+      // Clear local storage if unavailable
+      if (!checked && employeeId) {
+        localStorage.removeItem('employeeId');
+      }
+      
+      // Force refresh sessions
+      fetchSessions();
+      
     } catch (err) {
       console.error('Error updating availability:', err);
+      // Revert the state if the server update failed
+      setIsAvailable(!checked);
+      alert("Failed to update availability status. Please try again.");
     }
   };
 
@@ -144,7 +192,9 @@ export default function ChatAdmin() {
 
   const fetchMessages = async (sessionId) => {
     try {
-      const response = await fetch(`/api/chat/messages?sessionId=${sessionId}`);
+      const response = await fetch(`/api/chat/messages?sessionId=${sessionId}&t=${Date.now()}`, {
+        cache: 'no-store'
+      });
       if (!response.ok) throw new Error('Failed to fetch messages');
       
       const data = await response.json();
@@ -271,33 +321,59 @@ export default function ChatAdmin() {
     <div className="min-h-screen bg-zinc-900 text-white flex flex-col">
       <header className="bg-zinc-800 border-b border-zinc-700 p-4">
         <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-xl font-bold">Chat Admin Panel</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-bold">Chat Admin Panel</h1>
+            <button
+              onClick={async () => {
+                if (confirm('Reset all chat data? This will delete all messages and sessions.')) {
+                  try {
+                    const response = await fetch('/api/chat/reset-data', {
+                      method: 'POST'
+                    });
+                    if (response.ok) {
+                      alert('Chat data reset successfully');
+                      window.location.reload();
+                    } else {
+                      alert('Failed to reset chat data');
+                    }
+                  } catch (err) {
+                    console.error(err);
+                    alert('Error resetting chat data');
+                  }
+                }
+              }}
+              className="px-2 py-1 rounded text-xs bg-zinc-700 hover:bg-zinc-600 ml-2"
+            >
+              Reset Data
+            </button>
+          </div>
           
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Label htmlFor="availability" className="cursor-pointer">Available</Label>
-              <Switch 
-                id="availability" 
-                checked={isAvailable} 
-                onCheckedChange={handleAvailabilityChange}
-              />
-            </div>
+            <button
+              onClick={() => handleAvailabilityChange(!isAvailable)}
+              className={`px-4 py-1 rounded-md text-white text-sm ${isAvailable ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`}
+            >
+              {isAvailable ? 'Available' : 'Unavailable'}
+            </button>
             
-            <form onSubmit={handleSetName} className="flex gap-2">
-              <Input 
-                value={employeeName} 
-                onChange={e => setEmployeeName(e.target.value)} 
-                placeholder="Your Name" 
-                className="w-40 bg-zinc-700 border-zinc-600"
-              />
-              <Button 
-                type="submit" 
-                size="sm"
-                className="bg-red-700 hover:bg-red-800 text-white"
-              >
-                Set Name
-              </Button>
-            </form>
+            {isAvailable && (
+              <form onSubmit={handleSetName} className="flex gap-2">
+                <Input 
+                  value={employeeName} 
+                  onChange={e => setEmployeeName(e.target.value)} 
+                  placeholder="Your Name" 
+                  className="w-40 bg-zinc-700 border-zinc-600"
+                  required
+                />
+                <Button 
+                  type="submit" 
+                  size="sm"
+                  className="bg-red-700 hover:bg-red-800 text-white"
+                >
+                  Set Name
+                </Button>
+              </form>
+            )}
             
             <Button 
               variant="ghost" 
