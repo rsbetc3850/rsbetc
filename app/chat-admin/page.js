@@ -38,8 +38,11 @@ export default function ChatAdmin() {
         }
       };
 
+      // Initial fetch
       fetchData();
-      refreshInterval.current = setInterval(fetchData, 5000);
+      
+      // Set up more frequent polling (every 2 seconds) for better real-time experience
+      refreshInterval.current = setInterval(fetchData, 2000);
 
       return () => {
         if (refreshInterval.current) {
@@ -287,7 +290,11 @@ export default function ChatAdmin() {
                 placeholder="Your Name" 
                 className="w-40 bg-zinc-700 border-zinc-600"
               />
-              <Button type="submit" variant="outline" size="sm">
+              <Button 
+                type="submit" 
+                size="sm"
+                className="bg-red-700 hover:bg-red-800 text-white"
+              >
                 Set Name
               </Button>
             </form>

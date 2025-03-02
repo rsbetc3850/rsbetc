@@ -23,6 +23,47 @@ export default function ChatBubble() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+  
+  // Poll for new messages every 3 seconds when in chat mode
+  useEffect(() => {
+    let interval = null;
+    
+    const fetchNewMessages = async () => {
+      if (sessionId && chatStage === 'chat') {
+        try {
+          const response = await fetch(`/api/chat/messages?sessionId=${sessionId}`);
+          if (response.ok) {
+            const data = await response.json();
+            
+            // Update messages if there are new ones
+            if (data.messages.length > messages.length) {
+              setMessages(data.messages.map(msg => ({
+                id: msg.id,
+                content: msg.content,
+                isFromCustomer: msg.isFromCustomer,
+                aiGenerated: msg.aiGenerated || false,
+                createdAt: msg.createdAt
+              })));
+            }
+          }
+        } catch (error) {
+          console.error('Error polling for messages:', error);
+        }
+      }
+    };
+    
+    if (sessionId && chatStage === 'chat') {
+      // Initial fetch
+      fetchNewMessages();
+      
+      // Set up polling
+      interval = setInterval(fetchNewMessages, 3000);
+    }
+    
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [sessionId, chatStage, messages.length]);
 
   const handleInitialSubmit = async (e) => {
     e.preventDefault();
