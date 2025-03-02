@@ -31,3 +31,40 @@ model Link {
   updatedAt   DateTime @updatedAt @default(now())
   category    String
 }
+
+model Employee {
+  id           Int      @id @default(autoincrement())
+  name         String
+  isAvailable  Boolean  @default(false)
+  lastSeen     DateTime @default(now())
+  sessions     ChatSession[]
+  messages     ChatMessage[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model ChatSession {
+  id            Int      @id @default(autoincrement())
+  customerName  String
+  customerPhone String?
+  customerEmail String?
+  query         String?
+  status        String   @default("active") // active, closed, ai-handled
+  employeeId    Int?
+  employee      Employee? @relation(fields: [employeeId], references: [id])
+  messages      ChatMessage[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model ChatMessage {
+  id            Int      @id @default(autoincrement())
+  content       String
+  isFromCustomer Boolean
+  sessionId     Int
+  session       ChatSession @relation(fields: [sessionId], references: [id])
+  employeeId    Int?
+  employee      Employee? @relation(fields: [employeeId], references: [id])
+  aiGenerated   Boolean  @default(false)
+  createdAt     DateTime @default(now())
+}

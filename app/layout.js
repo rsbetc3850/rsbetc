@@ -3,7 +3,7 @@ import localFont from "next/font/local";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import BackgroundImage from "@/components/backgroundimage";
-//import { JsonResume } from 'jsonresume-component';
+import ChatBubble from "@/components/ChatBubble";
 import React from "react";
 import "./globals.css";
 
@@ -24,6 +24,7 @@ export default function RootLayout({ children }) {
                     <Header font={myfont.className} slug="Batteries Etc" />
                     <main className="w-full relative z-10 flex-grow">{children}</main>
                     <Footer />
+                    <ChatBubble />
                 </div>
             </body>
         </html>
