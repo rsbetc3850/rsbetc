@@ -195,15 +195,11 @@ export default function ChatBubble() {
         isTyping: true
       }]);
 
-      // Get system prompt based on customer info
-      const systemPrompt = `You are a helpful customer service representative for BATTERIESETCONLINE.COM, a business that sells batteries and related products. The customer's name is ${customerInfo.name}. ${customerInfo.phone ? `Their phone number is ${customerInfo.phone}.` : ''}
-      
-Be friendly, professional, and concise in your responses. Focus on helping the customer with their battery needs. If they ask questions you can't answer, offer to take their contact information and have a human representative get back to them.`;
-
       console.log("Sending message to AI:", message);
       
       // Use our own API endpoint as a proxy to avoid CORS issues
-      const response = await fetch(`/api/chat/ai?system=${encodeURIComponent(systemPrompt)}&user=${encodeURIComponent(message)}`);
+      // Send customer info to help with personalization but system prompt is defined server-side
+      const response = await fetch(`/api/chat/ai?customerName=${encodeURIComponent(customerInfo.name)}&customerPhone=${encodeURIComponent(customerInfo.phone || '')}&user=${encodeURIComponent(message)}`);
       
       if (!response.ok) throw new Error('Failed to get AI response');
       

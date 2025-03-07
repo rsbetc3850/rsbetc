@@ -35,24 +35,44 @@ export async function POST(req) {
     
     // If we're setting to available, update just this employee
     if (isAvailable) {
-      const updatedEmployee = await prisma.employee.update({
-        where: { 
-          id: parseInt(employeeId) 
-        },
-        data: { 
-          isAvailable: true,
-          lastSeen: new Date()
+      try {
+        const employeeIdInt = parseInt(employeeId);
+        
+        // Check if employee exists first
+        const existingEmployee = await prisma.employee.findUnique({
+          where: { id: employeeIdInt }
+        });
+        
+        if (!existingEmployee) {
+          return NextResponse.json({ error: 'Employee not found' }, { status: 404 });
         }
-      });
-      
-      console.log(`Force updated employee ${employeeId} to available`, updatedEmployee);
-      return NextResponse.json(updatedEmployee);
+        
+        const updatedEmployee = await prisma.employee.update({
+          where: { id: employeeIdInt },
+          data: { 
+            isAvailable: true,
+            lastSeen: new Date()
+          }
+        });
+        
+        console.log(`Force updated employee ${employeeId} to available`, updatedEmployee);
+        return NextResponse.json(updatedEmployee);
+      } catch (updateError) {
+        console.error('Error updating specific employee:', updateError);
+        return NextResponse.json({ 
+          error: 'Failed to update employee', 
+          message: updateError.message 
+        }, { status: 500 });
+      }
     }
     
     return NextResponse.json({ success: true, message: "Status updated successfully" });
     
   } catch (error) {
     console.error('Error updating employee availability:', error);
-    return NextResponse.json({ error: 'Failed to update employee availability' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Failed to update employee availability',
+      message: error.message
+    }, { status: 500 });
   }
 }

@@ -59,20 +59,33 @@ export default function ChatAdmin() {
   
   // Load employee status when authenticated
   useEffect(() => {
-    if (isAuthenticated && employeeName) {
+    if (isAuthenticated) {
       const employeeId = localStorage.getItem('employeeId');
       if (employeeId) {
         fetch(`/api/chat/employee/${employeeId}`)
-          .then(res => res.json())
+          .then(res => {
+            if (res.status === 404) {
+              // Employee not found, clear localStorage
+              console.log("Employee not found, clearing ID from localStorage");
+              localStorage.removeItem('employeeId');
+              return null;
+            }
+            return res.json();
+          })
           .then(data => {
             if (data && data.isAvailable !== undefined) {
               setIsAvailable(data.isAvailable);
+              setEmployeeName(data.name || '');
             }
           })
-          .catch(err => console.error('Error fetching employee status:', err));
+          .catch(err => {
+            console.error('Error fetching employee status:', err);
+            // Clear employee ID if there was an error
+            localStorage.removeItem('employeeId');
+          });
       }
     }
-  }, [isAuthenticated, employeeName]);
+  }, [isAuthenticated]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -140,18 +153,43 @@ export default function ChatAdmin() {
       
       const employeeId = localStorage.getItem('employeeId');
       
+      // Create a new employee if we don't have an ID and we're setting to available
+      if (checked && !employeeId && employeeName.trim()) {
+        // Register the employee first
+        const createResponse = await fetch('/api/chat/employee', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            name: employeeName, 
+            isAvailable: true 
+          })
+        });
+        
+        if (!createResponse.ok) {
+          throw new Error('Failed to create employee');
+        }
+        
+        const employeeData = await createResponse.json();
+        localStorage.setItem('employeeId', employeeData.id);
+        console.log("Created new employee:", employeeData);
+        
+        // Force refresh sessions
+        fetchSessions();
+        return;
+      }
+      
       // DIRECT DATABASE UPDATE for guaranteed reliability
       const response = await fetch(`/api/chat/employee/force-availability`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           isAvailable: checked,
-          employeeId: employeeId
+          employeeId: employeeId || null // Send null if employeeId is undefined
         })
       });
       
       if (!response.ok) {
-        throw new Error('Failed to update availability');
+        throw new Error(`Failed to update availability: ${response.status}`);
       }
       
       const data = await response.json();
