@@ -108,3 +108,16 @@ The chat feature includes a customer-facing chat bubble and an employee admin pa
 - Chat functionality works with the existing PM2 setup
 - Build process: `npm run build && pm2 restart rsbetc`
 - Database is managed via Prisma ORM
+
+## Git Repository Management
+
+### SSH Keys Setup
+- SSH keys are stored in `~travis/.ssh/`
+- Use `rsbetc3850-github` private key for GitHub access
+- Set up the SSH agent and add the key with:
+  ```bash
+  eval "$(ssh-agent -s)"
+  ssh-add ~travis/.ssh/rsbetc3850-github
+  ```
+- After adding the key, you can push with `git push`
+- The key is for the GitHub repository: github.com:rsbetc3850/rsbetc.git
