@@ -35,6 +35,16 @@
 - Consistent spacing: Use Tailwind's built-in spacing utilities
 - Font styles: Use the default font stack with appropriate weights
 
+## Development Workflow
+
+### Git Workflow
+- Always review git history of files being modified with `git log --patch <file>`
+- Make atomic, focused commits with descriptive messages
+- Commit messages should explain WHAT was changed and WHY
+- Always commit changes after testing and before deployment
+- Use standard commit format with emoji and co-authorship
+- Build and deploy with `npm run build && pm2 restart rsbetc`
+
 ## Chat Functionality - Implementation Notes
 
 ### Overview
@@ -45,6 +55,7 @@ The chat feature includes a customer-facing chat bubble and an employee admin pa
 - `/app/chat-admin/page.js` - Employee admin interface
 - `/app/chat-admin/layout.js` - Custom layout for admin (no header/footer)
 - `/app/api/chat/*` - API endpoints for chat functionality
+- `/app/api/chat/ai/route.js` - AI proxy with chat history and system prompt
 
 ### Features
 1. **Customer Interface**: Floating chat bubble that expands to a full chat interface.
@@ -52,6 +63,15 @@ The chat feature includes a customer-facing chat bubble and an employee admin pa
 3. **AI Integration**: Automatic AI responses when no employees are available.
 4. **Availability Management**: Employees can set themselves as available/unavailable.
 5. **Data Management**: Reset functionality to clear chat history and sessions.
+6. **Chat History**: AI responses maintain conversation context to avoid "amnesia".
+
+### AI Chat Implementation
+- AI responses use Cloudflare worker via a proxy in `/app/api/chat/ai/route.js`
+- System prompt includes specific guidance on being helpful with technical information
+- For inventory questions, AI should explain: "we have a lot of batteries and probably have that one, but I haven't been connected to the inventory system so you would have to call first"
+- AI should provide specific technical information when available (e.g., battery types)
+- Chat history is included in the system prompt to maintain context between messages
+- The `sessionId` parameter is required to fetch chat history
 
 ### Admin Panel Usage
 1. Access the admin panel at `/chat-admin`
