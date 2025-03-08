@@ -37,6 +37,15 @@
 
 ## Development Workflow
 
+### Self-Maintenance Instructions
+- CONTINUALLY update this CLAUDE.md file whenever learning new information about the codebase
+- Document any new commands, processes, or patterns discovered
+- Proactively maintain this documentation without being prompted
+- Add ALL discovered workflows, protocols, or conventions immediately
+- Take initiative to document and commit changes to this file WITHOUT asking permission first
+- When encountering repetitive tasks, document them here for future reference
+- NEVER ask if something should be documented - just document it
+
 ### Git Workflow
 - Always review git history of files being modified with `git log --patch <file>`
 - Make atomic, focused commits with descriptive messages
