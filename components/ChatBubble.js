@@ -198,8 +198,8 @@ export default function ChatBubble() {
       console.log("Sending message to AI:", message);
       
       // Use our own API endpoint as a proxy to avoid CORS issues
-      // Send customer info to help with personalization but system prompt is defined server-side
-      const response = await fetch(`/api/chat/ai?customerName=${encodeURIComponent(customerInfo.name)}&customerPhone=${encodeURIComponent(customerInfo.phone || '')}&user=${encodeURIComponent(message)}`);
+      // Send customer info, session ID, and message to provide context
+      const response = await fetch(`/api/chat/ai?sessionId=${encodeURIComponent(sessionId)}&customerName=${encodeURIComponent(customerInfo.name)}&customerPhone=${encodeURIComponent(customerInfo.phone || '')}&user=${encodeURIComponent(message)}`);
       
       if (!response.ok) throw new Error('Failed to get AI response');
       
